@@ -15,7 +15,7 @@
             "value": "myVM2"
         },
         "nicName": {
-            "value": "myVMnic3"
+            "value": "myVMnic2"
         },
         "vmSize": {
             "value": "Standard_B2S"
