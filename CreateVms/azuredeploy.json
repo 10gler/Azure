@@ -146,7 +146,13 @@
         "metadata": {
           "description": "Name of the virtual machine."
         }
-      }
+      },
+      "availabilitySetName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of the availability set."
+        }
+      }      
     },
     "variables": {
       "storageAccountName": "[format('bootdiags{0}', uniqueString(resourceGroup().id))]",
@@ -157,6 +163,19 @@
       "networkSecurityGroupName": "default-NSG"
     },
     "resources": [
+      {
+        "type": "Microsoft.Compute/availabilitySets",
+        "apiVersion": "2022-03-01",
+        "name": "[parameters('availabilitySetName')]",
+        "location": "westeurope",
+        "sku": {
+            "name": "Aligned"
+        },
+        "properties": {
+            "platformUpdateDomainCount": 5,
+            "platformFaultDomainCount": 2
+        }
+      },
       {
         "type": "Microsoft.Network/publicIPAddresses",
         "apiVersion": "2021-02-01",
@@ -308,10 +327,14 @@
                 "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('nicName'))]"
               }
             ]
+          },
+          "availabilitySet": {
+            "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySetName'))]"
           }
         },
         "dependsOn": [
-          "[resourceId('Microsoft.Network/networkInterfaces', parameters('nicName'))]"
+          "[resourceId('Microsoft.Network/networkInterfaces', parameters('nicName'))]",
+          "[resourceId('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
         ]
       },
       {
