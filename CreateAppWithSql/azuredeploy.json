@@ -1,0 +1,169 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "skuName": {
+      "type": "string",
+      "defaultValue": "F1",
+      "allowedValues": [
+        "F1",
+        "D1",
+        "B1",
+        "B2",
+        "B3",
+        "S1",
+        "S2",
+        "S3",
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "metadata": {
+        "description": "Describes plan's pricing tier and instance size. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
+      }
+    },    
+    "skuCapacity": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "The admin user of the SQL Server"
+      }
+    },
+    "sqlAdministratorLogin": {
+      "type": "string",
+      "metadata": {
+        "description": "The admin user of the SQL Server"
+      }
+    },
+    "sqlAdministratorLoginPassword": {
+      "type": "secureString",
+      "metadata": {
+        "description": "The password of the admin user of the SQL Server"
+      }
+    },
+    "databaseName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of database"
+      }
+    },    
+    "hostingPlanName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of app service plan"
+      }
+    },    
+    "websiteName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of app service"
+      }
+    },    
+    "sqlserverName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of sql server"
+      }
+    },   
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Sql/servers",
+      "apiVersion": "2021-02-01-preview",
+      "name": "[parameters('sqlServerName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "administratorLogin": "[parameters('sqlAdministratorLogin')]",
+        "administratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]",
+        "version": "12.0"
+      }
+    },
+    {
+        "type": "Microsoft.Sql/servers/databases",
+        "apiVersion": "2020-08-01-preview",
+        "name": "[format('{0}/{1}', parameters('sqlServerName'), parameters('databaseName'))]",
+        "location": "[parameters('location')]",            
+        "sku": {
+            "name": "GP_S_Gen5_1",
+            "tier": "GeneralPurpose",
+            "family": "Gen5",
+            "capacity": 1
+        },
+        "kind": "v12.0,user,vcore,serverless",
+        "properties": {
+            "collation": "SQL_Latin1_General_CP1_CI_AS",
+            "maxSizeBytes": 34359738368,
+            "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
+            "zoneRedundant": false,
+            "readScale": "Disabled",
+            "autoPauseDelay": 60,
+            "storageAccountType": "GRS",
+            "minCapacity": 0.5
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Sql/servers', parameters('sqlserverName'))]"
+        ]
+    },
+    {
+      "type": "Microsoft.Sql/servers/firewallRules",
+      "apiVersion": "2021-02-01-preview",
+      "name": "[format('{0}/{1}', parameters('sqlServerName'), 'AllowAllWindowsAzureIps')]",
+      "properties": {
+        "endIpAddress": "0.0.0.0",
+        "startIpAddress": "0.0.0.0"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2020-12-01",
+      "name": "[parameters('hostingPlanName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "[parameters('skuName')]",
+        "capacity": "[parameters('skuCapacity')]"        
+      },
+      "kind": "windows"
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2020-12-01",
+      "name": "[parameters('websiteName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",
+        "siteConfig": {
+          
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2020-12-01",
+      "name": "[format('{0}/{1}', parameters('websiteName'), 'connectionstrings')]",
+      "properties": {
+        "DefaultConnection": {
+          "value": "[format('Data Source=tcp:{0},1433;Initial Catalog={1};User Id={2}@{3};Password={4};', reference(resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))).fullyQualifiedDomainName, parameters('databaseName'), parameters('sqlAdministratorLogin'), reference(resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))).fullyQualifiedDomainName, parameters('sqlAdministratorLoginPassword'))]",
+          "type": "SQLAzure"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]",
+        "[resourceId('Microsoft.Web/sites', parameters('websiteName'))]"
+      ]
+    }
+  ]
+}

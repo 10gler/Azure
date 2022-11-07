@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "skuName": {
+      "value": "F1"
+    },
+    "skuCapacity": {
+      "value": 1
+    },
+    "sqlAdministratorLogin": {
+      "value": "stengler"
+    },
+    "sqlAdministratorLoginPassword": {		
+      "value": "Zxasqw12!@"		
+    },
+    "databaseName": {		
+      "value": "tgrTmpSqlDb2"		
+    },
+    "hostingPlanName": {		
+      "value": "tgrTmpFreePlan"		
+    },
+    "websiteName": {		
+      "value": "tgrTmpAppService"		
+    },
+    "sqlServerName": {		
+      "value": "tgrTmpDbServer2"		
+    }           
+  }
+}
