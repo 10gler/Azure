@@ -2,9 +2,9 @@ param location string = resourceGroup().location
 param sqlServerName string = 'tgrTmpSqlServer'
 param administratorLogin string = 'stengler'
 param administratorLoginPassword string = 'Qwerty12@!'
-
 param databaseName string = 'tgrTmpSqlServer'
-
+param hostingPlanName string = 'tgrTmpFreePlan'
+param websiteName string = 'tgrTmpAppService'
 
 resource sqlsrv 'Microsoft.Sql/servers@2022-05-01-preview' = {
   name: sqlServerName
@@ -46,7 +46,6 @@ resource sqlsrvfirewall 'Microsoft.Sql/servers/firewallRules@2022-05-01-preview'
   }
 }
 
-param hostingPlanName string = 'tgrTmpFreePlan'
 resource webfarm 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: hostingPlanName
   location: location
@@ -55,4 +54,12 @@ resource webfarm 'Microsoft.Web/serverfarms@2022-03-01' = {
     capacity: 1
   }
   kind: 'windows'
+}
+
+resource site 'Microsoft.Web/sites@2022-03-01' = {
+  name: websiteName
+  location: location
+  properties: {
+    serverFarmId: webfarm.id
+  }
 }
