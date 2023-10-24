@@ -2,7 +2,7 @@ param location string = resourceGroup().location
 param sqlServerName string = 'tgrTmpSqlServer'
 param administratorLogin string = 'stengler'
 param administratorLoginPassword string = 'Qwerty12@!'
-param databaseName string = 'tgrTmpSqlServer'
+param databaseName string = 'tgrTmpDatabase'
 param hostingPlanName string = 'tgrTmpFreePlan'
 param websiteName string = 'tgrTmpAppService'
 

@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.12.40.16777",
-      "templateHash": "18014355719623307839"
+      "version": "0.17.1.54307",
+      "templateHash": "6987968958036305583"
     }
   },
   "parameters": {
@@ -27,7 +27,7 @@
     },
     "databaseName": {
       "type": "string",
-      "defaultValue": "tgrTmpSqlServer"
+      "defaultValue": "tgrTmpDatabase"
     },
     "hostingPlanName": {
       "type": "string",
