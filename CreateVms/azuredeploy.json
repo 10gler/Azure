@@ -167,7 +167,7 @@
         "type": "Microsoft.Compute/availabilitySets",
         "apiVersion": "2022-03-01",
         "name": "[parameters('availabilitySetName')]",
-        "location": "westeurope",
+        "location": "[resourceGroup().location]",
         "sku": {
             "name": "Aligned"
         },
@@ -341,7 +341,7 @@
           "type": "Microsoft.Compute/virtualMachines/extensions",
           "apiVersion": "2022-03-01",
           "name": "[concat(parameters('vmName'), '/InstallWebServerOK')]",
-          "location": "westeurope",
+          "location": "[resourceGroup().location]",
           "dependsOn": [
               "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
           ],
