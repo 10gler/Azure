@@ -1,0 +1,1 @@
+New-AzResourceGroupDeployment -ResourceGroupName "TgrToRemove-1.10.04.2024" -TemplateFile main.bicep
