@@ -9,13 +9,13 @@
             "value": "TestPa$$w0rd!"
         },        
         "publicIpName": {
-            "value": "myPublicIpName1"
+            "value": "TgrPublicIpName1"
         },
         "vmName": {
-            "value": "myVM1"
+            "value": "TgrVM1"
         },
         "nicName": {
-            "value": "myVMnic1"
+            "value": "TgrVMnic1"
         },
         "vmSize": {
             "value": "Standard_B2S"
