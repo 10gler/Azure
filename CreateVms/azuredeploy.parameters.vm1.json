@@ -19,9 +19,6 @@
         },
         "vmSize": {
             "value": "Standard_B2S"
-        },
-        "availabilitySetName": {
-            "value": "TgrAvSet"
-        }        
+        }   
     }
 }
